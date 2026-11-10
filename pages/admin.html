@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café & Aconchego - Área Administrativa</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+
+    <header>
+        <h1>☕ Café & Aconchego</h1>
+        <p>Área Administrativa — gerencie o cardápio e veja os pedidos.</p>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="cardapio.html">Cardápio</a>
+            <a href="sobre.html">Sobre Nós</a>
+            <a href="admin.html" class="ativo">Área Administrativa</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Cadastrar novo produto</h2>
+        <form id="form-produto" class="form-admin">
+            <input type="hidden" id="produto-id">
+
+            <label for="produto-nome">Nome</label>
+            <input type="text" id="produto-nome" required placeholder="Ex: Mocaccino">
+
+            <label for="produto-descricao">Descrição</label>
+            <input type="text" id="produto-descricao" placeholder="Ex: Café, chocolate e leite vaporizado">
+
+            <label for="produto-preco">Preço (R$)</label>
+            <input type="number" id="produto-preco" step="0.01" min="0.01" required placeholder="Ex: 11.50">
+
+            <label for="produto-categoria">Categoria</label>
+            <select id="produto-categoria">
+                <option value="Bebida">Bebida</option>
+                <option value="Doce">Doce</option>
+                <option value="Salgado">Salgado</option>
+            </select>
+
+            <div class="botoes-form">
+                <button type="submit" id="btn-salvar-produto" class="finalizar">Cadastrar produto</button>
+                <button type="button" id="btn-cancelar-edicao" class="remover" hidden>Cancelar edição</button>
+            </div>
+            <p id="mensagem-admin" class="mensagem"></p>
+        </form>
+
+        <h2>Produtos cadastrados</h2>
+        <table class="tabela-admin" id="tabela-produtos">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nome</th>
+                    <th>Categoria</th>
+                    <th>Preço</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr><td colspan="5">Carregando produtos...</td></tr>
+            </tbody>
+        </table>
+
+        <h2>Pedidos recebidos</h2>
+        <div id="lista-pedidos-admin">
+            <p>Carregando pedidos...</p>
+        </div>
+    </main>
+
+    <footer>
+        <p>© 2026 Café & Aconchego - Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="../js/admin.js" defer></script>
+</body>
+</html>

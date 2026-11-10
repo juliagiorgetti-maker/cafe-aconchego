@@ -1,0 +1,26 @@
+<svg viewBox="0 0 500 300" xmlns="http://www.w3.org/2000/svg">
+  <rect width="500" height="300" fill="#f3e9dc" rx="20"/>
+  <!-- fachada -->
+  <rect x="90" y="120" width="320" height="140" fill="#e6ccb2" stroke="#5c3a21" stroke-width="4"/>
+  <rect x="90" y="120" width="320" height="30" fill="#5c3a21"/>
+  <rect x="130" y="170" width="60" height="90" fill="#3d2314"/>
+  <rect x="310" y="170" width="60" height="90" fill="#3d2314"/>
+  <rect x="220" y="190" width="60" height="70" fill="#fefae0" stroke="#5c3a21" stroke-width="3"/>
+  <!-- toldo -->
+  <g>
+    <polygon points="90,120 130,90 370,90 410,120" fill="#7f4f24"/>
+    <polygon points="90,120 120,120 140,90 130,90" fill="#f3e9dc"/>
+    <polygon points="140,120 170,120 180,90 170,90" fill="#7f4f24"/>
+    <polygon points="170,120 200,120 210,90 200,90" fill="#f3e9dc"/>
+    <polygon points="200,120 230,120 240,90 230,90" fill="#7f4f24"/>
+    <polygon points="230,120 260,120 260,90 250,90" fill="#f3e9dc"/>
+    <polygon points="260,120 290,120 280,90 260,90" fill="#7f4f24"/>
+    <polygon points="290,120 320,120 310,90 290,90" fill="#f3e9dc"/>
+    <polygon points="320,120 350,120 340,90 320,90" fill="#7f4f24"/>
+    <polygon points="350,120 380,120 370,90 350,90" fill="#f3e9dc"/>
+    <polygon points="380,120 410,120 400,90 380,90" fill="#7f4f24"/>
+  </g>
+  <ellipse cx="250" cy="270" rx="200" ry="14" fill="#d8c5b5"/>
+  <circle cx="70" cy="60" r="14" fill="#e6ccb2" opacity="0.7"/>
+  <circle cx="440" cy="70" r="20" fill="#e6ccb2" opacity="0.7"/>
+</svg>

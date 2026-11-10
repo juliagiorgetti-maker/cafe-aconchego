@@ -1,0 +1,483 @@
+/* Configurações Gerais */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #fdfaf6; /* Bege suave */
+    color: #4a3b32; /* Castanho escuro para o texto */
+    line-height: 1.6;
+}
+
+/* Cabeçalho e Título */
+header {
+    background-color: #3d2314; /* Cor de café expresso */
+    color: #f3e9dc; /* Creme */
+    text-align: center;
+    padding: 30px 20px 20px 20px;
+}
+
+header h1 {
+    font-size: 2.2rem;
+    margin-bottom: 5px;
+}
+
+header p {
+    font-style: italic;
+    opacity: 0.9;
+    margin-bottom: 20px;
+}
+
+/* Menu de Navegação */
+nav {
+    background-color: #5c3a21; /* Castanho médio */
+    padding: 12px;
+    border-radius: 8px;
+    display: inline-flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 4px;
+}
+
+nav a {
+    color: #f3e9dc;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 8px 16px;
+    margin: 0 5px;
+    border-radius: 4px;
+    transition: background-color 0.3s;
+}
+
+/* Efeito ao passar o rato nos links do menu */
+nav a:hover {
+    background-color: #8c5a3c;
+    color: #ffffff;
+}
+
+nav a.ativo {
+    background-color: #3d2314;
+    box-shadow: inset 0 0 0 2px #f3e9dc;
+}
+
+/* Conteúdo Principal */
+main {
+    max-width: 1000px;
+    margin: 40px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    border-radius: 12px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+main h2 {
+    color: #3d2314;
+    margin-bottom: 15px;
+    border-bottom: 2px solid #e6ccb2;
+    padding-bottom: 8px;
+}
+
+/* Estilo para a Lista do Cardápio */
+main ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+main li {
+    background-color: #fefae0;
+    margin: 10px 0;
+    padding: 12px 18px;
+    border-left: 5px solid #7f4f24;
+    border-radius: 4px;
+    font-size: 1.1rem;
+}
+
+/* Rodapé */
+footer {
+    text-align: center;
+    padding: 20px;
+    margin-top: 40px;
+    background-color: #e6ccb2;
+    color: #3d2314;
+    font-size: 0.9rem;
+}
+
+/* Destaque aplicado pelo JavaScript ao item escolhido */
+main li.selecionado {
+    background-color: #e6ccb2;
+    border-left-color: #3d2314;
+    font-weight: bold;
+    transform: scale(1.02);
+}
+
+/* Área de pedidos */
+.instrucao {
+    margin-bottom: 20px;
+}
+
+.produtos {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.produto {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+    background-color: #fefae0;
+    padding: 16px;
+    border-left: 5px solid #7f4f24;
+    border-radius: 8px;
+    transition: 0.2s;
+}
+
+.produto h3,
+.produto p {
+    margin: 0 0 5px;
+}
+
+.adicionar,
+.finalizar,
+.remover {
+    border: 0;
+    border-radius: 6px;
+    padding: 10px 14px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.adicionar,
+.finalizar {
+    background-color: #5c3a21;
+    color: white;
+}
+
+.adicionar:hover,
+.finalizar:hover {
+    background-color: #8c5a3c;
+}
+
+.produto.selecionado {
+    border-left-color: #3d2314;
+    background-color: #e6ccb2;
+}
+
+.pedido {
+    margin-top: 30px;
+    padding: 20px;
+    background-color: #f5eee6;
+    border-radius: 10px;
+}
+
+.pedido h2 {
+    margin-top: 0;
+}
+
+.item-pedido {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #d8c5b5;
+}
+
+.remover {
+    background-color: #b86b5c;
+    color: white;
+}
+
+.total {
+    text-align: right;
+    font-size: 1.2rem;
+    margin-top: 20px;
+}
+
+#form-pedido {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-top: 20px;
+}
+
+#nome-cliente {
+    padding: 12px;
+    border: 1px solid #c8b6a6;
+    border-radius: 6px;
+    font-size: 1rem;
+}
+
+.finalizar {
+    margin-top: 8px;
+}
+
+.mensagem {
+    margin-bottom: 0;
+    font-weight: bold;
+    color: #31572c;
+}
+
+.mensagem.erro {
+    color: #9b2226;
+}
+
+@media (max-width: 600px) {
+    .produto {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .adicionar {
+        width: 100%;
+    }
+
+    .item-pedido {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* =========================================================
+   Seção Hero (Home)
+   ========================================================= */
+.hero {
+    display: flex;
+    align-items: center;
+    gap: 30px;
+    flex-wrap: wrap;
+    margin-bottom: 40px;
+}
+
+.hero-texto {
+    flex: 1 1 320px;
+}
+
+.hero-texto h2 {
+    border-bottom: none;
+    margin-bottom: 15px;
+}
+
+.botao-cta {
+    display: inline-block;
+    margin-top: 15px;
+    background-color: #5c3a21;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 12px 22px;
+    border-radius: 8px;
+    transition: background-color 0.3s;
+}
+
+.botao-cta:hover {
+    background-color: #8c5a3c;
+}
+
+.hero-imagem {
+    flex: 1 1 280px;
+    max-width: 400px;
+}
+
+.hero-imagem img {
+    width: 100%;
+    height: auto;
+    display: block;
+}
+
+/* Cards de destaque na home */
+.destaques {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+}
+
+.card-destaque {
+    background-color: #fefae0;
+    border-radius: 10px;
+    padding: 20px;
+    text-align: center;
+    border-top: 4px solid #7f4f24;
+}
+
+.card-destaque .icone {
+    font-size: 2rem;
+    display: block;
+    margin-bottom: 8px;
+}
+
+.card-destaque h3 {
+    color: #3d2314;
+    margin-bottom: 6px;
+}
+
+/* =========================================================
+   Cardápio - imagens dos produtos
+   ========================================================= */
+.produto {
+    flex-wrap: wrap;
+}
+
+.produto-imagem {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    object-fit: cover;
+    flex-shrink: 0;
+}
+
+.produto-info {
+    flex: 1;
+}
+
+.produto-descricao {
+    font-size: 0.9rem;
+    color: #6b5849;
+    margin: 2px 0 4px;
+}
+
+.produto-preco {
+    font-weight: bold;
+    color: #3d2314;
+}
+
+.carregando {
+    font-style: italic;
+    color: #8c5a3c;
+}
+
+/* =========================================================
+   Sobre Nós
+   ========================================================= */
+.sobre-conteudo {
+    display: flex;
+    align-items: center;
+    gap: 25px;
+    flex-wrap: wrap;
+    margin-bottom: 30px;
+}
+
+.sobre-imagem {
+    flex: 1 1 280px;
+    max-width: 380px;
+    width: 100%;
+    border-radius: 10px;
+}
+
+.sobre-conteudo > div {
+    flex: 1 1 280px;
+}
+
+.lista-valores {
+    list-style: disc;
+    padding-left: 20px;
+}
+
+.lista-valores li {
+    background: none;
+    border: none;
+    padding: 4px 0;
+    margin: 0;
+    font-size: 1rem;
+}
+
+/* =========================================================
+   Área Administrativa
+   ========================================================= */
+.form-admin {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px 20px;
+    background-color: #f5eee6;
+    padding: 20px;
+    border-radius: 10px;
+    margin-bottom: 30px;
+}
+
+.form-admin label {
+    font-weight: bold;
+    font-size: 0.9rem;
+    margin-bottom: -4px;
+}
+
+.form-admin input,
+.form-admin select {
+    padding: 10px;
+    border: 1px solid #c8b6a6;
+    border-radius: 6px;
+    font-size: 1rem;
+    width: 100%;
+}
+
+.botoes-form {
+    grid-column: 1 / -1;
+    display: flex;
+    gap: 10px;
+    margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+    .form-admin {
+        grid-template-columns: 1fr;
+    }
+}
+
+.tabela-admin {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.tabela-admin th,
+.tabela-admin td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #e6ccb2;
+}
+
+.tabela-admin th {
+    background-color: #5c3a21;
+    color: #f3e9dc;
+}
+
+.tabela-admin tbody tr:hover {
+    background-color: #fefae0;
+}
+
+.tabela-admin td button {
+    border: 0;
+    border-radius: 6px;
+    padding: 6px 10px;
+    cursor: pointer;
+    font-weight: bold;
+    margin-right: 6px;
+}
+
+.btn-editar {
+    background-color: #7f4f24;
+    color: white;
+}
+
+.pedido-admin {
+    background-color: #fefae0;
+    border-left: 5px solid #7f4f24;
+    border-radius: 6px;
+    padding: 12px 16px;
+    margin-bottom: 12px;
+}
+
+.pedido-admin ul {
+    list-style: none;
+    padding-left: 10px;
+    margin-top: 6px;
+}
+
+.pedido-admin li {
+    background: none;
+    border: none;
+    padding: 2px 0;
+    font-size: 0.9rem;
+}

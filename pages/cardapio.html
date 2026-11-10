@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Café & Aconchego - Cardápio</title>
+    <link rel="stylesheet" href="../css/estilo.css">
+</head>
+<body>
+
+    <header>
+        <h1>☕ Café & Aconchego</h1>
+        <p>O seu cantinho favorito para um bom café e uma boa conversa.</p>
+        <nav>
+            <a href="../index.html">Home</a>
+            <a href="cardapio.html" class="ativo">Cardápio</a>
+            <a href="sobre.html">Sobre Nós</a>
+            <a href="admin.html">Área Administrativa</a>
+        </nav>
+    </header>
+
+    <main>
+        <h2>Faça seu pedido</h2>
+        <p class="instrucao">Escolha os produtos e clique em <strong>Adicionar</strong>. Os itens abaixo vêm do banco de dados MySQL.</p>
+
+        <!-- Os produtos são inseridos aqui dinamicamente pelo script.js,
+             a partir dos dados retornados por /api/produtos -->
+        <section class="produtos" id="lista-produtos">
+            <p class="carregando">Carregando cardápio...</p>
+        </section>
+
+        <section class="pedido">
+            <h2>🛒 Seu pedido</h2>
+            <div id="lista-pedido">
+                <p id="pedido-vazio">Seu pedido está vazio.</p>
+            </div>
+            <p class="total">Total: <strong id="total">R$ 0,00</strong></p>
+
+            <form id="form-pedido">
+                <label for="nome-cliente">Seu nome:</label>
+                <input type="text" id="nome-cliente" placeholder="Digite seu nome" required>
+                <button class="finalizar" type="submit">Finalizar pedido</button>
+            </form>
+            <p id="mensagem-pedido" class="mensagem"></p>
+        </section>
+    </main>
+
+    <footer>
+        <p>© 2026 Café & Aconchego - Todos os direitos reservados.</p>
+    </footer>
+
+    <script src="../js/script.js" defer></script>
+</body>
+</html>
