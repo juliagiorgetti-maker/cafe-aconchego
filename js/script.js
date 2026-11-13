@@ -10,8 +10,18 @@ document.addEventListener("DOMContentLoaded", function () {
     if (!listaProdutos) return;
 
     const pedido = [];
+    const modoGitHubPages = window.location.hostname.endsWith("github.io");
 
-    // ---------- Carrega os produtos do banco de dados via PHP ----------
+    // Produtos iniciais iguais aos cadastrados em database/banco.sql.
+    // No GitHub Pages, eles aparecem mesmo sem o servidor Flask.
+    const produtosDemonstracao = [
+        { id: 1, nome: "Espresso Tradicional", descricao: "Café puro extraído na pressão certa", preco: 6.00, imagem: "produto-espresso.svg" },
+        { id: 2, nome: "Cappuccino Cremoso", descricao: "Espresso, leite vaporizado e espuma", preco: 10.00, imagem: "produto-cappuccino.svg" },
+        { id: 3, nome: "Latte Macchiato", descricao: "Leite vaporizado com um toque de café", preco: 12.00, imagem: "produto-latte.svg" },
+        { id: 4, nome: "Bolo do Dia (Fatia)", descricao: "Receita caseira, sabor variado diariamente", preco: 8.00, imagem: "produto-bolo.svg" },
+        { id: 5, nome: "Pão de Queijo Recheado", descricao: "Recheio de catupiry, servido quente", preco: 7.00, imagem: "produto-pao-queijo.svg" }
+    ];
+
     function carregarProdutos() {
         fetch("/api/produtos")
             .then(function (resposta) {
@@ -22,6 +32,12 @@ document.addEventListener("DOMContentLoaded", function () {
                 renderizarProdutos(produtos);
             })
             .catch(function (erro) {
+                if (modoGitHubPages) {
+                    renderizarProdutos(produtosDemonstracao);
+                    mensagem.textContent = "Visualização pelo GitHub: os produtos são demonstrativos. Para registrar pedidos, abra o projeto com Flask e MySQL.";
+                    return;
+                }
+
                 listaProdutos.innerHTML =
                     '<p class="mensagem erro">Não foi possível carregar o cardápio. Verifique se o servidor Flask e o MySQL estão rodando.</p>';
                 console.error(erro);
@@ -34,7 +50,7 @@ document.addEventListener("DOMContentLoaded", function () {
         produtos.forEach(function (produto) {
             const artigo = document.createElement("article");
             artigo.classList.add("produto");
-            artigo.dataset.id = produto.id;
+            artigo.dataset.id = produto.id ?? produto.id_produto;
             artigo.dataset.nome = produto.nome;
             artigo.dataset.preco = produto.preco;
 
@@ -55,7 +71,6 @@ document.addEventListener("DOMContentLoaded", function () {
             listaProdutos.appendChild(artigo);
         });
 
-        // Liga o evento de clique em cada botão "Adicionar" recém-criado
         document.querySelectorAll(".adicionar").forEach(function (botao) {
             botao.addEventListener("click", function () {
                 adicionarAoPedido(botao);
@@ -63,14 +78,13 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ---------- Lógica do carrinho (igual à ideia original, adaptada) ----------
     function adicionarAoPedido(botao) {
         const produto = botao.closest(".produto");
         const id = Number(produto.dataset.id);
         const nome = produto.dataset.nome;
         const preco = Number(produto.dataset.preco);
         const itemExistente = pedido.find(function (item) {
-            return item.nome === nome;
+            return item.id === id;
         });
 
         if (itemExistente) {
@@ -124,13 +138,18 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // ---------- Envia o pedido para o PHP salvar no banco ----------
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
 
         if (pedido.length === 0) {
             mensagem.textContent = "Adicione pelo menos um produto ao pedido.";
             mensagem.classList.add("erro");
+            return;
+        }
+
+        if (modoGitHubPages) {
+            mensagem.classList.add("erro");
+            mensagem.textContent = "O carrinho funciona para demonstração, mas o GitHub Pages não executa Flask/MySQL. Para salvar pedidos, execute o projeto pelo VS Code com python app.py.";
             return;
         }
 
@@ -155,7 +174,6 @@ document.addEventListener("DOMContentLoaded", function () {
                 mensagem.classList.remove("erro");
                 mensagem.textContent = `Pedido #${dados.pedidoId} de ${nomeCliente.value.trim()} salvo com sucesso! Total: R$ ${dados.total}.`;
 
-                // Limpa o carrinho depois de confirmar no banco
                 pedido.length = 0;
                 atualizarPedido();
                 formulario.reset();
