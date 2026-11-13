@@ -1,16 +1,30 @@
-"""Servidor Flask: serve o front-end e expõe a API JSON em /api."""
-from flask import Flask, jsonify, request
+"""Servidor Flask: serve as páginas do projeto e expõe a API JSON em /api."""
+import os
+from flask import Flask, jsonify, request, send_from_directory
 from backend.dao import ProdutoDAO, PedidoDAO
 from backend.modelos import Produto, Pedido, ItemPedido
 
-app = Flask(__name__, static_folder="frontend", static_url_path="")
+BASE_DIR = os.path.abspath(os.path.dirname(__file__))
+app = Flask(__name__, static_folder=None)
 produtos_dao = ProdutoDAO()
 pedidos_dao = PedidoDAO()
 
 
 @app.route("/")
 def inicio():
-    return app.send_static_file("index.html")
+    return send_from_directory(BASE_DIR, "index.html")
+
+
+@app.route("/<path:arquivo>")
+def arquivos_site(arquivo):
+    # Libera somente os arquivos públicos do site.
+    permitido = (
+        arquivo == "index.html"
+        or arquivo.startswith(("css/", "js/", "img/", "pages/"))
+    )
+    if not permitido:
+        return "Arquivo não encontrado.", 404
+    return send_from_directory(BASE_DIR, arquivo)
 
 
 def _produto_do_json(dados, id_produto=None):
@@ -70,7 +84,7 @@ def salvar_pedido():
             qtd = int(item.get("quantidade"))
         except (TypeError, ValueError):
             qtd = 0
-        if produto and qtd > 0:  # preço vem do banco, não do navegador
+        if produto and qtd > 0:
             itens.append(ItemPedido(produto.id_produto, qtd, produto.preco, produto.nome))
     if not nome or not itens:
         return jsonify({"erro": "Informe seu nome e adicione ao menos um item ao pedido."}), 400
