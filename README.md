@@ -4,33 +4,38 @@ Sistema web de cardápio e pedidos de uma cafeteria.
 
 - **Banco de dados:** MySQL (`database/banco.sql`)
 - **Back-end:** Python + Flask, com classes (`backend/modelos.py`) e DAOs (`backend/dao.py`)
-- **Front-end:** HTML/CSS/JS (`frontend/`) consumindo a API com `fetch`
+- **Front-end:** HTML/CSS/JavaScript (`index.html`, `css/`, `js/`, `pages/`)
 
-## Modelagem (Etapa 1)
-Modelos em `docs/` (conceitual e lógico) e físico em `database/banco.sql`.
-Tabelas: `categoria`, `produto`, `pedido`, `item_pedido`.
+## Visualizar pelo GitHub Pages
 
-## Como rodar
+O GitHub Pages publica a parte visual do projeto. O cardápio mostra os cinco produtos de demonstração cadastrados no SQL e permite montar o carrinho. **O envio de pedidos e a área administrativa precisam do Flask e do MySQL**, que não são executados pelo GitHub Pages.
+
+Depois que o workflow terminar, acesse:
+`https://juliagiorgetti-maker.github.io/cafe-aconchego/`
+
+## Rodar o sistema completo no computador
+
 1. Inicie o MySQL (XAMPP) e importe `database/banco.sql` (phpMyAdmin → Importar).
 2. Instale as dependências:
    ```
    python -m venv .venv
-   .venv\Scripts\activate        # Windows  (Linux/Mac: source .venv/bin/activate)
+   .venv\\Scripts\\activate
    pip install -r requirements.txt
    ```
-3. Teste a conexão: `python -m backend.conexao`
-   (usuário/senha padrão: `root` sem senha; mude com as variáveis `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_NAME`).
-4. Rode: `python app.py` e abra http://localhost:5000
+3. Teste a conexão: `python -m backend.conexao`.
+4. Rode `python app.py` e abra http://localhost:5000.
 
 ## API
+
 | Método | Rota | Função |
 |---|---|---|
 | GET | `/api/produtos` | lista produtos ativos |
 | POST | `/api/produtos` | cadastra produto |
 | PUT | `/api/produtos/<id>` | edita produto |
-| DELETE | `/api/produtos/<id>` | exclui (ou desativa, se já vendido) |
+| DELETE | `/api/produtos/<id>` | exclui produto |
 | GET | `/api/pedidos` | lista pedidos com itens |
-| POST | `/api/pedidos` | registra pedido (total calculado no servidor) |
+| POST | `/api/pedidos` | registra pedido |
 
 ## Integrantes
+
 - (preencher)
