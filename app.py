@@ -1,22 +1,54 @@
-from flask import Flask, jsonify
+from pathlib import Path
+
+from flask import Flask, jsonify, send_from_directory
 from werkzeug.exceptions import HTTPException
+
 from routes import produtos_bp, pedidos_bp
 
-app = Flask(__name__, static_folder=".", static_url_path="")
+BASE_DIR = Path(__file__).resolve().parent
+app = Flask(__name__, static_folder=None)
 app.json.ensure_ascii = False
+
 app.register_blueprint(produtos_bp)
 app.register_blueprint(pedidos_bp)
 
+
 @app.get("/")
 def home():
-    return app.send_static_file("index.html")
+    return send_from_directory(BASE_DIR, "index.html")
+
+
+def servir_arquivo(pasta, arquivo):
+    return send_from_directory(BASE_DIR / pasta, arquivo)
+
+
+@app.get("/css/<path:arquivo>")
+def css(arquivo):
+    return servir_arquivo("css", arquivo)
+
+
+@app.get("/js/<path:arquivo>")
+def javascript(arquivo):
+    return servir_arquivo("js", arquivo)
+
+
+@app.get("/img/<path:arquivo>")
+def imagens(arquivo):
+    return servir_arquivo("img", arquivo)
+
+
+@app.get("/pages/<path:arquivo>")
+def paginas(arquivo):
+    return servir_arquivo("pages", arquivo)
+
 
 @app.errorhandler(Exception)
-def tratar_erro(e):
-    if isinstance(e, HTTPException):
-        return jsonify({"erro": e.description}), e.code
-    app.logger.exception(e)
+def tratar_erro(erro):
+    if isinstance(erro, HTTPException):
+        return jsonify({"erro": erro.description}), erro.code
+    app.logger.exception(erro)
     return jsonify({"erro": "Erro interno. Verifique se o MySQL está rodando."}), 500
 
+
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host="127.0.0.1", port=5000, debug=False)

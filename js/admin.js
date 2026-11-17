@@ -12,7 +12,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagem = document.querySelector("#mensagem-admin");
     const corpoTabela = document.querySelector("#tabela-produtos tbody");
     const listaPedidosAdmin = document.querySelector("#lista-pedidos-admin");
+    const resumo = document.querySelector("#resumo-pedidos");
     if (!formulario) return;
+
+    // O GitHub Pages não executa Flask nem acessa o MySQL.
+    const estaNoGitHubPages = location.hostname.endsWith("github.io");
+    if (estaNoGitHubPages) {
+        mensagem.textContent = "A área administrativa precisa do Flask e do MySQL. Abra o projeto localmente seguindo o README para cadastrar produtos e consultar pedidos.";
+        formulario.querySelectorAll("input, select, button").forEach(function (campo) {
+            campo.disabled = true;
+        });
+        corpoTabela.innerHTML = '<tr><td colspan="5">Disponível somente com Flask e MySQL.</td></tr>';
+        resumo.textContent = "Dados administrativos indisponíveis no site demonstrativo.";
+        listaPedidosAdmin.innerHTML = "<p>Para visualizar pedidos, execute o sistema localmente.</p>";
+        return;
+    }
 
     function esc(texto) {
         const d = document.createElement("div");
@@ -21,8 +35,15 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function carregarProdutos() {
-        fetch(api("/api/produtos")).then(function (r) { return r.json(); }).then(renderizarTabela)
-            .catch(function () { corpoTabela.innerHTML = '<tr><td colspan="5">Erro ao carregar produtos.</td></tr>'; });
+        fetch(api("/api/produtos"))
+            .then(function (r) {
+                if (!r.ok) throw new Error("Não foi possível consultar os produtos.");
+                return r.json();
+            })
+            .then(renderizarTabela)
+            .catch(function () {
+                corpoTabela.innerHTML = '<tr><td colspan="5">Erro ao carregar produtos. Confira o Flask e o MySQL.</td></tr>';
+            });
     }
 
     function renderizarTabela(produtos) {
@@ -64,57 +85,72 @@ document.addEventListener("DOMContentLoaded", function () {
 
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
-        const dados = { id: campoId.value || null, nome: campoNome.value.trim(),
-            descricao: campoDescricao.value.trim(), preco: parseFloat(campoPreco.value),
-            categoria: campoCategoria.value };
-        const editando = Boolean(dados.id);
-        fetch(api(editando ? "/api/produtos/" + dados.id : "/api/produtos"), {
+        const dados = {
+            nome: campoNome.value.trim(),
+            descricao: campoDescricao.value.trim(),
+            preco: parseFloat(campoPreco.value),
+            categoria: campoCategoria.value
+        };
+        const id = campoId.value;
+        const editando = Boolean(id);
+        fetch(api(editando ? "/api/produtos/" + id : "/api/produtos"), {
             method: editando ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
-        }).then(function (r) { return r.json(); }).then(function (resultado) {
-            if (resultado.erro) {
-                mensagem.classList.add("erro");
-                mensagem.textContent = resultado.erro;
-                return;
-            }
+        })
+        .then(function (r) { return r.json(); })
+        .then(function (resultado) {
+            if (resultado.erro) throw new Error(resultado.erro);
             mensagem.classList.remove("erro");
             mensagem.textContent = resultado.mensagem;
             limparFormulario();
             carregarProdutos();
-        }).catch(function () {
+        })
+        .catch(function (erro) {
             mensagem.classList.add("erro");
-            mensagem.textContent = "Erro de conexão com o servidor.";
+            mensagem.textContent = erro.message || "Erro de conexão com o servidor.";
         });
     });
 
     function excluirProduto(id) {
         if (!confirm("Tem certeza que deseja excluir este produto?")) return;
         fetch(api("/api/produtos/" + id), { method: "DELETE" })
-            .then(function (r) { return r.json(); }).then(function (resultado) {
+            .then(function (r) { return r.json(); })
+            .then(function (resultado) {
                 mensagem.classList.toggle("erro", Boolean(resultado.erro));
                 mensagem.textContent = resultado.erro || resultado.mensagem;
                 carregarProdutos();
                 carregarPedidos();
-            }).catch(function () {
+            })
+            .catch(function () {
                 mensagem.classList.add("erro");
                 mensagem.textContent = "Erro ao excluir produto.";
             });
     }
 
     function carregarPedidos() {
-        fetch(api("/api/pedidos")).then(function (r) { return r.json(); }).then(renderizarPedidos)
-            .catch(function () { listaPedidosAdmin.innerHTML = "<p>Erro ao carregar pedidos.</p>"; });
+        fetch(api("/api/pedidos"))
+            .then(function (r) {
+                if (!r.ok) throw new Error("Não foi possível consultar os pedidos.");
+                return r.json();
+            })
+            .then(renderizarPedidos)
+            .catch(function () {
+                listaPedidosAdmin.innerHTML = "<p>Erro ao carregar pedidos. Confira o Flask e o MySQL.</p>";
+            });
     }
 
     const STATUS = ["Recebido", "Em preparo", "Pronto", "Entregue", "Cancelado"];
-    const resumo = document.querySelector("#resumo-pedidos");
-    function dinheiro(v) { return "R$ " + Number(v).toFixed(2).replace(".", ","); }
+    function dinheiro(valor) {
+        return "R$ " + Number(valor).toFixed(2).replace(".", ",");
+    }
 
     function renderizarPedidos(pedidos) {
         const validos = pedidos.filter(function (p) { return p.status !== "Cancelado"; });
         const faturamento = validos.reduce(function (soma, p) { return soma + Number(p.total); }, 0);
-        const abertos = pedidos.filter(function (p) { return p.status === "Recebido" || p.status === "Em preparo"; }).length;
+        const abertos = pedidos.filter(function (p) {
+            return p.status === "Recebido" || p.status === "Em preparo";
+        }).length;
         resumo.innerHTML = '<div><strong>' + pedidos.length + '</strong><span>pedidos</span></div><div><strong>' + abertos + '</strong><span>em aberto</span></div><div><strong>' + dinheiro(faturamento) + '</strong><span>faturamento</span></div>';
         if (!pedidos.length) {
             listaPedidosAdmin.innerHTML = "<p>Nenhum pedido registrado ainda.</p>";
@@ -124,27 +160,32 @@ document.addEventListener("DOMContentLoaded", function () {
             const itensHtml = pedido.itens.map(function (item) {
                 return '<li>' + esc(item.produto_nome) + ' — ' + item.quantidade + 'x (R$ ' + Number(item.preco_unitario).toFixed(2).replace(".", ",") + ')</li>';
             }).join("");
-            const opcoes = STATUS.map(function (s) {
-                return '<option value="' + s + '"' + (s === pedido.status ? " selected" : "") + '>' + s + '</option>';
+            const opcoes = STATUS.map(function (status) {
+                return '<option value="' + status + '"' + (status === pedido.status ? " selected" : "") + '>' + status + '</option>';
             }).join("");
             return '<div class="pedido-admin"><p><strong>Pedido #' + pedido.id + '</strong> — ' + esc(pedido.nome_cliente) + ' — R$ ' + Number(pedido.total).toFixed(2).replace(".", ",") + ' — <select class="select-status" data-id="' + pedido.id + '" aria-label="Status do pedido ' + pedido.id + '">' + opcoes + '</select></p><ul>' + itensHtml + '</ul></div>';
         }).join("");
-        document.querySelectorAll(".select-status").forEach(function (sel) {
-            sel.addEventListener("change", function () {
-                fetch(api("/api/pedidos/" + sel.dataset.id + "/status"), {
-                    method: "PATCH", headers: { "Content-Type": "application/json" },
-                    body: JSON.stringify({ status: sel.value })
-                }).then(function (r) { return r.json(); }).then(function (resultado) {
+        document.querySelectorAll(".select-status").forEach(function (seletor) {
+            seletor.addEventListener("change", function () {
+                fetch(api("/api/pedidos/" + seletor.dataset.id + "/status"), {
+                    method: "PATCH",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ status: seletor.value })
+                })
+                .then(function (r) { return r.json(); })
+                .then(function (resultado) {
                     mensagem.classList.toggle("erro", Boolean(resultado.erro));
                     mensagem.textContent = resultado.erro || resultado.mensagem;
                     carregarPedidos();
-                }).catch(function () {
+                })
+                .catch(function () {
                     mensagem.classList.add("erro");
                     mensagem.textContent = "Erro ao atualizar o status.";
                 });
             });
         });
     }
+
     carregarProdutos();
     carregarPedidos();
 });
