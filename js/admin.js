@@ -1,6 +1,4 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const API_BASE = location.pathname.startsWith("/cafe-aconchego/") ? "/cafe-aconchego" : "";
-    const api = function (path) { return API_BASE + path; };
     const formulario = document.querySelector("#form-produto");
     const campoId = document.querySelector("#produto-id");
     const campoNome = document.querySelector("#produto-nome");
@@ -15,19 +13,6 @@ document.addEventListener("DOMContentLoaded", function () {
     const resumo = document.querySelector("#resumo-pedidos");
     if (!formulario) return;
 
-    // O GitHub Pages não executa Flask nem acessa o MySQL.
-    const estaNoGitHubPages = location.hostname.endsWith("github.io");
-    if (estaNoGitHubPages) {
-        mensagem.textContent = "A área administrativa precisa do Flask e do MySQL. Abra o projeto localmente seguindo o README para cadastrar produtos e consultar pedidos.";
-        formulario.querySelectorAll("input, select, button").forEach(function (campo) {
-            campo.disabled = true;
-        });
-        corpoTabela.innerHTML = '<tr><td colspan="5">Disponível somente com Flask e MySQL.</td></tr>';
-        resumo.textContent = "Dados administrativos indisponíveis no site demonstrativo.";
-        listaPedidosAdmin.innerHTML = "<p>Para visualizar pedidos, execute o sistema localmente.</p>";
-        return;
-    }
-
     function esc(texto) {
         const d = document.createElement("div");
         d.textContent = texto ?? "";
@@ -35,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function carregarProdutos() {
-        fetch(api("/api/produtos"))
+        fetch("/api/produtos")
             .then(function (r) {
                 if (!r.ok) throw new Error("Não foi possível consultar os produtos.");
                 return r.json();
@@ -114,7 +99,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function excluirProduto(id) {
         if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-        fetch(api("/api/produtos/" + id), { method: "DELETE" })
+        fetch("/api/produtos/" + id, { method: "DELETE" })
             .then(function (r) { return r.json(); })
             .then(function (resultado) {
                 mensagem.classList.toggle("erro", Boolean(resultado.erro));
@@ -129,7 +114,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function carregarPedidos() {
-        fetch(api("/api/pedidos"))
+        fetch("/api/pedidos")
             .then(function (r) {
                 if (!r.ok) throw new Error("Não foi possível consultar os pedidos.");
                 return r.json();
@@ -167,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }).join("");
         document.querySelectorAll(".select-status").forEach(function (seletor) {
             seletor.addEventListener("change", function () {
-                fetch(api("/api/pedidos/" + seletor.dataset.id + "/status"), {
+                fetch("/api/pedidos/" + seletor.dataset.id + "/status"), {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ status: seletor.value })
