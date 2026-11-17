@@ -1,52 +1,88 @@
-# Café & Aconchego
+# ☕ Café & Aconchego — Projeto Integrado
 
-Projeto integrado de cafeteria desenvolvido com HTML, CSS, JavaScript, Python/Flask, POO e MySQL.
+Sistema web de cafeteria com cardápio, carrinho, registro de pedidos e painel administrativo.
 
-## 1. Executar o sistema completo
+**Tecnologias:** Python, Flask, POO, MySQL, HTML, CSS e JavaScript.
 
-O sistema com cadastro de produtos, pedidos e área administrativa precisa do Flask e do MySQL.
+## Executar o projeto
 
-1. Inicie o MySQL pelo XAMPP.
+1. Instale e inicie o MySQL pelo XAMPP.
 2. Abra o phpMyAdmin e importe o arquivo `database/banco.sql`.
-3. Abra o terminal na pasta principal do projeto.
-4. Instale as dependências: `pip install -r requirements.txt`.
-5. Confira usuário, senha e nome do banco em `config.py`.
-6. Inicie o servidor: `python app.py`.
-7. Abra no navegador: `http://127.0.0.1:5000`.
+3. Na pasta principal do projeto, crie e ative um ambiente virtual:
 
-Se o MySQL tiver senha, configure a variável `DB_PASSWORD` ou atualize a configuração local em `config.py`.
+   ```bash
+   python -m venv venv
+   venv\Scripts\activate
+   ```
 
-## 2. Site publicado no GitHub Pages
+   No Linux/macOS, use `source venv/bin/activate`.
 
-O GitHub Pages hospeda arquivos estáticos. Ele não executa Python/Flask e não conecta ao MySQL. No endereço publicado, o cardápio mostra produtos de demonstração e o carrinho funciona apenas para visualização. Não é possível gravar pedidos nem administrar produtos pelo Pages.
+4. Instale as dependências:
 
-Para usar todas as funções, execute o projeto localmente conforme a seção 1 ou publique o backend Flask e o banco em um serviço próprio. O Pages, sozinho, não hospeda o backend.
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-## 3. Organização dos arquivos
+5. Confira as configurações do banco no arquivo `config.py`. Se necessário, configure as variáveis `DB_HOST`, `DB_PORT`, `DB_USER`, `DB_PASSWORD` e `DB_NAME`.
+6. Inicie o Flask:
 
-- `app.py`: inicialização do Flask e páginas estáticas permitidas.
-- `config.py`: configuração de conexão com o MySQL.
-- `routes/`: rotas da API.
-- `models/`: classes de Produto, Pedido e ItemPedido (POO).
-- `dao/`: operações de acesso ao banco de dados.
-- `database/banco.sql`: criação das tabelas e produtos iniciais.
-- `pages/`: cardápio, sobre e área administrativa.
-- `css/`, `js/`, `img/`: arquivos do site.
-- `docs/`: diagramas conceitual e lógico.
+   ```bash
+   python app.py
+   ```
 
-## 4. Rotas da API
+7. Acesse **http://127.0.0.1:5000**.
 
-- `GET /api/produtos`: lista produtos.
-- `GET /api/produtos?categoria=Doce`: filtra por categoria.
-- `GET /api/produtos/<id>`: consulta um produto.
-- `POST /api/produtos`: cadastra produto.
-- `PUT /api/produtos/<id>`: edita produto.
-- `DELETE /api/produtos/<id>`: exclui produto.
-- `GET /api/pedidos`: lista pedidos.
-- `GET /api/pedidos/<id>`: consulta um pedido.
-- `POST /api/pedidos`: registra pedido.
-- `PATCH /api/pedidos/<id>/status`: atualiza o status de um pedido.
+> O sistema completo precisa do Flask e do MySQL ligados. O GitHub armazena o código-fonte, mas o GitHub Pages não executa Python/Flask nem conecta ao MySQL. Por isso, esta versão não usa GitHub Pages.
 
-## 5. Observação
+## Funcionalidades
 
-O arquivo SQL usa `CREATE TABLE IF NOT EXISTS` e não apaga tabelas existentes. Faça backup do banco antes de alterações manuais.
+- Cardápio carregado do banco de dados.
+- Filtro por categoria.
+- Carrinho com alteração de quantidade e remoção de itens.
+- Registro de pedidos no MySQL.
+- Cadastro, edição e exclusão de produtos.
+- Consulta de pedidos e atualização de status.
+- Resumo de pedidos, pedidos em aberto e faturamento.
+
+## Estrutura
+
+```
+app.py              # inicialização do Flask
+config.py           # configuração do MySQL
+models/             # classes Produto, Pedido e ItemPedido
+dao/                # conexão e acesso ao banco
+routes/             # rotas da API Flask
+database/           # script SQL do banco
+index.html          # página inicial
+pages/              # cardápio, sobre e painel administrativo
+css/                # estilos
+js/                 # scripts do navegador
+img/                # imagens
+docs/               # documentação e diagramas
+```
+
+## Rotas da API
+
+| Método | Rota | Função |
+|---|---|---|
+| GET | `/api/produtos` | Lista os produtos |
+| GET | `/api/produtos?categoria=Doce` | Filtra por categoria |
+| GET | `/api/produtos/<id>` | Consulta um produto |
+| POST | `/api/produtos` | Cadastra produto |
+| PUT | `/api/produtos/<id>` | Edita produto |
+| DELETE | `/api/produtos/<id>` | Exclui produto |
+| GET | `/api/pedidos` | Lista pedidos |
+| GET | `/api/pedidos/<id>` | Consulta um pedido |
+| POST | `/api/pedidos` | Registra um pedido |
+| PATCH | `/api/pedidos/<id>/status` | Atualiza o status |
+
+## Testes
+
+Com o MySQL ligado e o banco importado, execute:
+
+```bash
+python testar_conexao.py
+python testar_etapa2.py
+```
+
+Os testes de integração criam e removem registros de teste. Use um banco de desenvolvimento.
