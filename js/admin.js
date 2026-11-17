@@ -78,7 +78,7 @@ document.addEventListener("DOMContentLoaded", function () {
         };
         const id = campoId.value;
         const editando = Boolean(id);
-        fetch(api(editando ? "/api/produtos/" + id : "/api/produtos"), {
+        fetch(editando ? "/api/produtos/" + id : "/api/produtos", {
             method: editando ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
