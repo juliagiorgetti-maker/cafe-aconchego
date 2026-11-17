@@ -1,41 +1,35 @@
 # Café & Aconchego — Projeto Integrado (DWS + POO + BD)
 
-Sistema web de cardápio e pedidos de uma cafeteria.
+Sistema web de cardápio e pedidos para uma cafeteria.
 
-- **Banco de dados:** MySQL (`database/banco.sql`)
-- **Back-end:** Python + Flask, com classes (`backend/modelos.py`) e DAOs (`backend/dao.py`)
-- **Front-end:** HTML/CSS/JavaScript (`index.html`, `css/`, `js/`, `pages/`)
+- **Front-end:** HTML, CSS e JavaScript.
+- **Back-end:** Python + Flask, com models, DAOs e rotas.
+- **Banco de dados:** MySQL.
 
-## Visualizar pelo GitHub Pages
+## Como executar o sistema completo
 
-O GitHub Pages publica a parte visual do projeto. O cardápio mostra os cinco produtos de demonstração cadastrados no SQL e permite montar o carrinho. **O envio de pedidos e a área administrativa precisam do Flask e do MySQL**, que não são executados pelo GitHub Pages.
+1. Instale Python e MySQL (XAMPP também pode ser usado).
+2. Instale as dependências: `pip install -r requirements.txt`.
+3. Importe `database/banco.sql` no phpMyAdmin.
+4. Confira as configurações de acesso ao banco em `config.py`.
+5. Execute `python app.py`.
+6. Abra `http://127.0.0.1:5000`.
 
-Depois que o workflow terminar, acesse:
-`https://juliagiorgetti-maker.github.io/cafe-aconchego/`
+## Funcionalidades da Etapa 3
 
-## Rodar o sistema completo no computador
+- Cardápio carregado pela API e filtrado por categoria.
+- Carrinho com aumento, diminuição e remoção de itens.
+- Finalização de pedidos gravados no MySQL.
+- Área administrativa com CRUD de produtos.
+- Listagem de pedidos, resumo e alteração de status.
 
-1. Inicie o MySQL (XAMPP) e importe `database/banco.sql` (phpMyAdmin → Importar).
-2. Instale as dependências:
-   ```
-   python -m venv .venv
-   .venv\\Scripts\\activate
-   pip install -r requirements.txt
-   ```
-3. Teste a conexão: `python -m backend.conexao`.
-4. Rode `python app.py` e abra http://localhost:5000.
+## Rotas principais
 
-## API
+- `GET /api/produtos` e `GET /api/produtos?categoria=Doce`
+- `POST /api/produtos`, `PUT /api/produtos/<id>`, `DELETE /api/produtos/<id>`
+- `GET /api/pedidos`, `POST /api/pedidos`
+- `PATCH /api/pedidos/<id>/status`
 
-| Método | Rota | Função |
-|---|---|---|
-| GET | `/api/produtos` | lista produtos ativos |
-| POST | `/api/produtos` | cadastra produto |
-| PUT | `/api/produtos/<id>` | edita produto |
-| DELETE | `/api/produtos/<id>` | exclui produto |
-| GET | `/api/pedidos` | lista pedidos com itens |
-| POST | `/api/pedidos` | registra pedido |
+Consulte `docs/ETAPA3.md` para o roteiro da entrega final.
 
-## Integrantes
-
-- (preencher)
+**Atenção:** o GitHub Pages hospeda somente páginas estáticas. Para usar os pedidos, o painel administrativo e o banco MySQL, execute o Flask com o MySQL ligado.

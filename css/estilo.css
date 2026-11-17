@@ -481,3 +481,18 @@ main li.selecionado {
     padding: 2px 0;
     font-size: 0.9rem;
 }
+
+
+/* Recursos adicionados na Etapa 3 */
+.filtros { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:18px; }
+.filtro { border:2px solid #5c3a21; background:transparent; color:#5c3a21; border-radius:20px; padding:6px 16px; cursor:pointer; font-weight:bold; }
+.filtro:hover, .filtro.ativo { background:#5c3a21; color:#fff; }
+.item-pedido { grid-template-columns:1fr auto auto auto; }
+.quantidade { display:inline-flex; align-items:center; gap:8px; }
+.qtd { border:0; border-radius:50%; width:28px; height:28px; background:#e6ccb2; color:#3d2314; font-size:1.1rem; font-weight:bold; cursor:pointer; }
+.qtd:hover { background:#d4a373; }
+.resumo { display:flex; flex-wrap:wrap; gap:12px; margin-bottom:16px; }
+.resumo div { flex:1 1 140px; background:#3d2314; color:#f3e9dc; border-radius:8px; padding:12px 16px; text-align:center; }
+.resumo strong { display:block; font-size:1.4rem; }
+.select-status { margin-left:8px; padding:4px 8px; border-radius:6px; border:1px solid #b08968; background:#fff; color:#4a3b32; }
+@media (max-width:600px) { .item-pedido { grid-template-columns:1fr; } }
