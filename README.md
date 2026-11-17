@@ -1,35 +1,42 @@
-# Café & Aconchego — Projeto Integrado (DWS + POO + BD)
+# Café & Aconchego
 
-Sistema web de cardápio e pedidos para uma cafeteria.
+Projeto integrado de cafeteria desenvolvido com HTML, CSS, JavaScript, Python/Flask, POO e MySQL.
 
-- **Front-end:** HTML, CSS e JavaScript.
-- **Back-end:** Python + Flask, com models, DAOs e rotas.
-- **Banco de dados:** MySQL.
+## Executar o sistema completo (Flask + MySQL)
 
-## Como executar o sistema completo
+1. Inicie o MySQL pelo XAMPP ou serviço instalado.
+2. Abra o phpMyAdmin e importe `database/banco.sql`.
+3. No terminal, dentro da pasta do projeto, instale as dependências:
+   `pip install -r requirements.txt`
+4. Confira usuário e senha do banco em `config.py`.
+5. Inicie o sistema:
+   `python app.py`
+6. Acesse `http://127.0.0.1:5000`.
 
-1. Instale Python e MySQL (XAMPP também pode ser usado).
-2. Instale as dependências: `pip install -r requirements.txt`.
-3. Importe `database/banco.sql` no phpMyAdmin.
-4. Confira as configurações de acesso ao banco em `config.py`.
-5. Execute `python app.py`.
-6. Abra `http://127.0.0.1:5000`.
+Nesse modo, o cardápio consulta o MySQL e os pedidos são gravados no banco. A área administrativa permite cadastrar, editar e excluir produtos e atualizar o status dos pedidos.
 
-## Funcionalidades da Etapa 3
+## Site publicado no GitHub Pages
 
-- Cardápio carregado pela API e filtrado por categoria.
-- Carrinho com aumento, diminuição e remoção de itens.
-- Finalização de pedidos gravados no MySQL.
-- Área administrativa com CRUD de produtos.
-- Listagem de pedidos, resumo e alteração de status.
+O GitHub Pages hospeda apenas arquivos estáticos e não executa Python, Flask ou MySQL. Por isso, o cardápio publicado mostra produtos de demonstração para a página não ficar vazia. O carrinho permite visualizar quantidades e valores, mas não grava pedidos. Para salvar pedidos e administrar produtos, use o sistema local com Flask e MySQL.
 
-## Rotas principais
+## Estrutura principal
 
-- `GET /api/produtos` e `GET /api/produtos?categoria=Doce`
-- `POST /api/produtos`, `PUT /api/produtos/<id>`, `DELETE /api/produtos/<id>`
-- `GET /api/pedidos`, `POST /api/pedidos`
-- `PATCH /api/pedidos/<id>/status`
+- `app.py`: inicialização do Flask.
+- `routes/`: rotas da API.
+- `models/`: classes do projeto (POO).
+- `dao/`: operações com o banco de dados.
+- `database/banco.sql`: criação das tabelas e produtos iniciais.
+- `pages/`: cardápio, sobre e administração.
+- `css/`, `js/`, `img/`: arquivos do site.
+- `docs/`: documentação e diagramas do projeto.
 
-Consulte `docs/ETAPA3.md` para o roteiro da entrega final.
+## API
 
-**Atenção:** o GitHub Pages hospeda somente páginas estáticas. Para usar os pedidos, o painel administrativo e o banco MySQL, execute o Flask com o MySQL ligado.
+- `GET /api/produtos` — lista produtos.
+- `GET /api/produtos?categoria=Doce` — filtra por categoria.
+- `POST /api/produtos` — cadastra produto.
+- `PUT /api/produtos/<id>` — edita produto.
+- `DELETE /api/produtos/<id>` — exclui produto.
+- `GET /api/pedidos` — lista pedidos.
+- `POST /api/pedidos` — registra pedido.
+- `PATCH /api/pedidos/<id>/status` — atualiza status.

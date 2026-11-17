@@ -1,4 +1,6 @@
 document.addEventListener("DOMContentLoaded", function () {
+    const API_BASE = location.pathname.startsWith("/cafe-aconchego/") ? "/cafe-aconchego" : "";
+    const api = function (path) { return API_BASE + path; };
     const formulario = document.querySelector("#form-produto");
     const campoId = document.querySelector("#produto-id");
     const campoNome = document.querySelector("#produto-nome");
@@ -19,7 +21,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function carregarProdutos() {
-        fetch("/api/produtos").then(function (r) { return r.json(); }).then(renderizarTabela)
+        fetch(api("/api/produtos")).then(function (r) { return r.json(); }).then(renderizarTabela)
             .catch(function () { corpoTabela.innerHTML = '<tr><td colspan="5">Erro ao carregar produtos.</td></tr>'; });
     }
 
@@ -66,7 +68,7 @@ document.addEventListener("DOMContentLoaded", function () {
             descricao: campoDescricao.value.trim(), preco: parseFloat(campoPreco.value),
             categoria: campoCategoria.value };
         const editando = Boolean(dados.id);
-        fetch(editando ? "/api/produtos/" + dados.id : "/api/produtos", {
+        fetch(api(editando ? "/api/produtos/" + dados.id : "/api/produtos"), {
             method: editando ? "PUT" : "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(dados)
@@ -88,7 +90,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function excluirProduto(id) {
         if (!confirm("Tem certeza que deseja excluir este produto?")) return;
-        fetch("/api/produtos/" + id, { method: "DELETE" })
+        fetch(api("/api/produtos/" + id), { method: "DELETE" })
             .then(function (r) { return r.json(); }).then(function (resultado) {
                 mensagem.classList.toggle("erro", Boolean(resultado.erro));
                 mensagem.textContent = resultado.erro || resultado.mensagem;
@@ -101,7 +103,7 @@ document.addEventListener("DOMContentLoaded", function () {
     }
 
     function carregarPedidos() {
-        fetch("/api/pedidos").then(function (r) { return r.json(); }).then(renderizarPedidos)
+        fetch(api("/api/pedidos")).then(function (r) { return r.json(); }).then(renderizarPedidos)
             .catch(function () { listaPedidosAdmin.innerHTML = "<p>Erro ao carregar pedidos.</p>"; });
     }
 
@@ -129,7 +131,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }).join("");
         document.querySelectorAll(".select-status").forEach(function (sel) {
             sel.addEventListener("change", function () {
-                fetch("/api/pedidos/" + sel.dataset.id + "/status", {
+                fetch(api("/api/pedidos/" + sel.dataset.id + "/status"), {
                     method: "PATCH", headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ status: sel.value })
                 }).then(function (r) { return r.json(); }).then(function (resultado) {
