@@ -7,20 +7,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const mensagem = document.querySelector("#mensagem-pedido");
     if (!listaProdutos) return;
 
-    // O GitHub Pages usa o caminho do repositório; o Flask local usa a raiz.
-    const basePath = location.pathname.startsWith("/cafe-aconchego/") ? "/cafe-aconchego" : "";
-    const api = function (caminho) { return basePath + caminho; };
-    let apiDisponivel = true;
     const pedido = [];
-
-    // Produtos de demonstração para o GitHub Pages, que não executa Flask/MySQL.
-    const produtosDemo = [
-        {id:1,nome:"Espresso Tradicional",descricao:"Café puro extraído na pressão certa",preco:6,categoria:"Bebida",imagem:"produto-espresso.svg"},
-        {id:2,nome:"Cappuccino Cremoso",descricao:"Espresso, leite vaporizado e espuma",preco:10,categoria:"Bebida",imagem:"produto-cappuccino.svg"},
-        {id:3,nome:"Latte Macchiato",descricao:"Leite vaporizado com um toque de café",preco:12,categoria:"Bebida",imagem:"produto-latte.svg"},
-        {id:4,nome:"Bolo do Dia (Fatia)",descricao:"Receita caseira, sabor variado diariamente",preco:8,categoria:"Doce",imagem:"produto-bolo.svg"},
-        {id:5,nome:"Pão de Queijo Recheado",descricao:"Recheio de catupiry, servido quente",preco:7,categoria:"Salgado",imagem:"produto-pao-queijo.svg"}
-    ];
 
     function esc(texto) {
         const d = document.createElement("div");
@@ -28,24 +15,18 @@ document.addEventListener("DOMContentLoaded", function () {
         return d.innerHTML;
     }
 
+    // Busca os produtos diretamente da API Flask e do banco MySQL.
     function carregarProdutos(categoria) {
-        fetch(api("/api/produtos" + (categoria ? "?categoria=" + encodeURIComponent(categoria) : "")))
-            .then(function (r) {
-                if (!r.ok) throw new Error("API indisponível");
-                return r.json();
+        const url = categoria ? "/api/produtos?categoria=" + encodeURIComponent(categoria) : "/api/produtos";
+        fetch(url)
+            .then(function (resposta) {
+                if (!resposta.ok) throw new Error("Erro ao buscar produtos.");
+                return resposta.json();
             })
-            .then(function (produtos) {
-                apiDisponivel = true;
-                renderizarProdutos(produtos);
-            })
+            .then(renderizarProdutos)
             .catch(function (erro) {
-                // No Pages, a API não existe: mostra o catálogo de exemplo sem quebrar a página.
-                apiDisponivel = false;
-                const produtos = categoria
-                    ? produtosDemo.filter(function (p) { return p.categoria === categoria; })
-                    : produtosDemo;
-                renderizarProdutos(produtos);
-                console.info("Mostrando cardápio demonstrativo. Para pedidos reais, execute o Flask com MySQL.", erro);
+                listaProdutos.innerHTML = '<p class="mensagem erro">Não foi possível carregar o cardápio. Verifique se o Flask e o MySQL estão ligados.</p>';
+                console.error(erro);
             });
     }
 
@@ -55,6 +36,7 @@ document.addEventListener("DOMContentLoaded", function () {
             listaProdutos.innerHTML = '<p class="carregando">Nenhum produto nesta categoria.</p>';
             return;
         }
+
         produtos.forEach(function (produto) {
             const artigo = document.createElement("article");
             artigo.classList.add("produto");
@@ -62,12 +44,19 @@ document.addEventListener("DOMContentLoaded", function () {
             artigo.dataset.nome = produto.nome;
             artigo.dataset.preco = produto.preco;
             if (pedido.some(function (i) { return i.produtoId === produto.id; })) artigo.classList.add("selecionado");
+
             const imagem = produto.imagem
                 ? '<img src="../img/' + encodeURIComponent(produto.imagem) + '" alt="Ilustração de ' + esc(produto.nome) + '" class="produto-imagem">'
                 : "";
-            artigo.innerHTML = imagem + '<div class="produto-info"><h3>' + esc(produto.nome) + '</h3><p class="produto-descricao">' + esc(produto.descricao) + '</p><p class="produto-preco">R$ ' + Number(produto.preco).toFixed(2).replace(".", ",") + '</p></div><button class="adicionar" type="button">Adicionar</button>';
+
+            artigo.innerHTML = imagem +
+                '<div class="produto-info"><h3>' + esc(produto.nome) + '</h3>' +
+                '<p class="produto-descricao">' + esc(produto.descricao) + '</p>' +
+                '<p class="produto-preco">R$ ' + Number(produto.preco).toFixed(2).replace(".", ",") + '</p></div>' +
+                '<button class="adicionar" type="button">Adicionar</button>';
             listaProdutos.appendChild(artigo);
         });
+
         listaProdutos.querySelectorAll(".adicionar").forEach(function (botao) {
             botao.addEventListener("click", function () { adicionarAoPedido(botao); });
         });
@@ -86,27 +75,35 @@ document.addEventListener("DOMContentLoaded", function () {
 
     function atualizarPedido() {
         listaPedido.innerHTML = "";
-        if (pedido.length === 0) {
+        if (!pedido.length) {
             listaPedido.innerHTML = '<p id="pedido-vazio">Seu pedido está vazio.</p>';
             totalElemento.textContent = "R$ 0,00";
             return;
         }
+
         let total = 0;
         pedido.forEach(function (item, indice) {
             const subtotal = item.preco * item.quantidade;
             total += subtotal;
             const div = document.createElement("div");
             div.classList.add("item-pedido");
-            div.innerHTML = '<span>' + esc(item.nome) + '</span><span class="quantidade"><button type="button" class="qtd" data-indice="' + indice + '" data-delta="-1" aria-label="Diminuir">−</button><strong>' + item.quantidade + '</strong><button type="button" class="qtd" data-indice="' + indice + '" data-delta="1" aria-label="Aumentar">+</button></span><span>R$ ' + subtotal.toFixed(2).replace(".", ",") + '</span><button type="button" class="remover" data-indice="' + indice + '">Remover</button>';
+            div.innerHTML = '<span>' + esc(item.nome) + '</span><span class="quantidade">' +
+                '<button type="button" class="qtd" data-indice="' + indice + '" data-delta="-1" aria-label="Diminuir">−</button>' +
+                '<strong>' + item.quantidade + '</strong>' +
+                '<button type="button" class="qtd" data-indice="' + indice + '" data-delta="1" aria-label="Aumentar">+</button></span>' +
+                '<span>R$ ' + subtotal.toFixed(2).replace(".", ",") + '</span>' +
+                '<button type="button" class="remover" data-indice="' + indice + '">Remover</button>';
             listaPedido.appendChild(div);
         });
         totalElemento.textContent = "R$ " + total.toFixed(2).replace(".", ",");
+
         listaPedido.querySelectorAll(".qtd").forEach(function (botao) {
             botao.addEventListener("click", function () {
                 const indice = Number(botao.dataset.indice);
                 pedido[indice].quantidade += Number(botao.dataset.delta);
                 if (pedido[indice].quantidade <= 0) pedido.splice(indice, 1);
                 atualizarPedido();
+                carregarProdutos(document.querySelector(".filtro.ativo")?.dataset.categoria || "");
             });
         });
         listaPedido.querySelectorAll(".remover").forEach(function (botao) {
@@ -120,26 +117,23 @@ document.addEventListener("DOMContentLoaded", function () {
 
     formulario.addEventListener("submit", function (evento) {
         evento.preventDefault();
-        if (!apiDisponivel) {
-            mensagem.classList.add("erro");
-            mensagem.textContent = "O cardápio está em modo de demonstração. Para salvar pedidos, abra o projeto pelo servidor Flask com o MySQL ligado.";
-            return;
-        }
-        if (pedido.length === 0) {
+        if (!pedido.length) {
             mensagem.classList.add("erro");
             mensagem.textContent = "Adicione pelo menos um produto ao pedido.";
             return;
         }
+
         const corpo = {
             nomeCliente: nomeCliente.value.trim(),
             itens: pedido.map(function (i) { return { produtoId: i.produtoId, quantidade: i.quantidade }; })
         };
-        fetch(api("/api/pedidos"), {
+
+        fetch("/api/pedidos", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(corpo)
         })
-        .then(function (r) { return r.json(); })
+        .then(function (resposta) { return resposta.json(); })
         .then(function (dados) {
             if (dados.erro) throw new Error(dados.erro);
             mensagem.classList.remove("erro");
@@ -151,7 +145,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .catch(function (erro) {
             mensagem.classList.add("erro");
-            mensagem.textContent = erro.message || "Não foi possível salvar o pedido. Confira o Flask e o MySQL.";
+            mensagem.textContent = erro.message || "Erro ao salvar o pedido. Confira o Flask e o MySQL.";
         });
     });
 
