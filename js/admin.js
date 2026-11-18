@@ -152,7 +152,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }).join("");
         document.querySelectorAll(".select-status").forEach(function (seletor) {
             seletor.addEventListener("change", function () {
-                fetch("/api/pedidos/" + seletor.dataset.id + "/status"), {
+                fetch("/api/pedidos/" + seletor.dataset.id + "/status", {
                     method: "PATCH",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ status: seletor.value })
